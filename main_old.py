@@ -2,7 +2,7 @@
 Author: wangyunfei
 Date: 2023-07-29 13:16:53
 LastEditors: wangyunfei
-LastEditTime: 2023-07-30 16:46:03
+LastEditTime: 2023-07-31 21:19:40
 Description: file content
 FilePath: /platfrom/main_old.py
 '''
@@ -17,24 +17,26 @@ def main():
     source = '三拔子乡'
     tableName = 'xuexi'
     deviceID = '1d3b47dd'
-    mgDB = ExeDataBase('/Users/yunfeiwang/project/platfrom/data/platfrom.txt')
-    sql = f"SELECT name FROM {tableName} WHERE source='{source}'"
-    registedList = []
     user = 'wangyunfei'
-    for i in mgDB.select_data(sql):
-        registedList.append(i[0])
-    rfg = Register(deviceID, user)
-    nameFile = '/Users/yunfeiwang/project/platfrom/data/name1.txt'
-    with open(nameFile, 'r') as f:
 
-        data = f.read().split('\n')
-    rfg.main(data, registedList, source)
+    # 注册
+    # mgDB = ExeDataBase('/Users/yunfeiwang/project/platfrom/data/platfrom.txt')
+    # sql = f"SELECT name FROM {tableName} WHERE source='{source}'"
+    # registedList = []
+    # for i in mgDB.select_data(sql):
+    #     registedList.append(i[0])
+    # rfg = Register(deviceID, user)
+    # nameFile = '/Users/yunfeiwang/project/platfrom/data/name1.txt'
+    # with open(nameFile, 'r') as f:
+
+    #     data = f.read().split('\n')
+    # rfg.main(data, registedList, source)
 
     # 申请
-    # aplly = ApllyUser(deviceID, user)
-    # apllyData = init_aplly_for_data(source, tableName)
-    # print(apllyData)
-    # aplly.main(apllyData)
+    aplly = ApllyUser(deviceID, user)
+    apllyData = init_aplly_for_data(source, tableName)
+    print(apllyData)
+    aplly.main(apllyData)
 
 
 if __name__ == '__main__':
