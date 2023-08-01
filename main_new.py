@@ -2,7 +2,7 @@
 Author: wangyunfei
 Date: 2023-07-29 13:16:53
 LastEditors: wangyunfei
-LastEditTime: 2023-07-31 20:25:49
+LastEditTime: 2023-08-01 21:36:59
 Description: file content
 FilePath: /platfrom/main_new.py
 '''
@@ -13,11 +13,12 @@ from common.db import ExeDataBase
 
 def main():
     # 来源
-    source = '三拔子乡'
+    source = '胡杖子'
     # 数据库中的表名
     tableName = 'xuexi'
     # 手机的设备ID
     deviceID = 'b7ffe811'
+    # deviceID = '1d3b47dd'
     mgDB = ExeDataBase('/Users/yunfeiwang/project/platfrom/data/platfrom.txt')
     sql = f"SELECT name FROM {tableName} WHERE source='{source}'"
     registedList = []

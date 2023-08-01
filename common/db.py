@@ -2,7 +2,7 @@
 Author: wangyunfei
 Date: 2023-07-30 11:00:28
 LastEditors: wangyunfei
-LastEditTime: 2023-07-30 15:55:19
+LastEditTime: 2023-08-01 20:31:07
 Description: file content
 FilePath: /platfrom/common/db.py
 '''
@@ -36,7 +36,7 @@ class ExeDataBase():
 
         conn = sqlite3.connect(self.dbFile)
         cur = conn.cursor()
-        seqStr = f"""INSERT INTO "main"."{tableName}" ("phone", "name", "isApllyFor", "source", "deviceID", "ctime",  "protype") VALUES (?, ?, ?, ?, ?, ?, ?)"""
+        seqStr = f"""INSERT INTO "main"."{tableName}" ("phone", "name", "isNewUser", "isApllyFor", "source", "phoneType", "deviceID", "ctime",  "protype") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         cur.executemany(seqStr, data)
         conn.commit()
         cur.close()

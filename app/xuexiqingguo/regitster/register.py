@@ -2,13 +2,14 @@
 Author: wangyunfei
 Date: 2023-07-29 21:38:58
 LastEditors: wangyunfei
-LastEditTime: 2023-07-30 17:12:50
+LastEditTime: 2023-08-01 21:34:09
 Description: file content
 FilePath: /platfrom/app/xuexiqingguo/regitster/register.py
 '''
 
 from airtest.core.api import start_app, shell, wait, Template, stop_app, touch
 from airtest.core.api import exists, swipe, clear_app
+from poco.drivers.android.uiautomation import AndroidUiautomationPoco
 import time
 
 from app.xuexiqingguo.initDevice import InitDevice
@@ -18,7 +19,7 @@ from common.db import ExeDataBase
 
 class Register(InitDevice):
 
-    def __init__(self, deviceID, user) -> None:
+    def __init__(self, deviceID, user, phoneType='vivox9') -> None:
         self.appName = 'cn.xuexi.android'
         super().__init__(deviceID)
         self.deviceID = deviceID
@@ -27,6 +28,8 @@ class Register(InitDevice):
         passwd = 'T8TqeyE4COp6'
         self.codePlat = GetCode(user, passwd)
         self.clear_app_data()
+        self.poco = AndroidUiautomationPoco(use_airtest_input=True, screenshot_each_action=False)
+        self.phoneType = phoneType
 
     def register_app(self, user: str, phone: str, status=True):
         """对用户进行注册
@@ -158,6 +161,27 @@ class Register(InitDevice):
             self.logger.warning("The Enter password page is not displayed")
             return '-1'
 
+    def change_name(self, name):
+        # 点击我的页面
+        touch(Template(f"{self.imageDir}/tpl1690209180907.png", record_pos=(0.415, -0.756), resolution=(1080, 1920)))
+        # 进入到用户页面
+        touch(Template(f"{self.imageDir}/tpl1690815389908.png", record_pos=(0.425, -0.601), resolution=(1080, 1920)))
+        try:
+            # 等待计入我的页面是否成功
+            wait(Template(f"{self.imageDir}/tpl1690815432386.png", record_pos=(-0.003, -0.744), resolution=(1080, 1920)))
+        except:
+            # 没有进入到我的页面返回-1
+            self.logger.error('My info page is not displayed')
+            return False
+        # 点击昵称
+        touch(Template(f"{self.imageDir}/tpl1690815442413.png", record_pos=(-0.179, -0.428), resolution=(1080, 1920)))
+        # 修改用户名
+        self.poco("android.widget.FrameLayout").child("android.widget.LinearLayout").offspring("android.widget.EditText").set_text(name)
+        # 点击提交按钮
+        touch(Template(f"{self.imageDir}/tpl1690891761420.png", record_pos=(0.229, -0.237), resolution=(1080, 1920)))
+        time.sleep(2)
+        return True
+
     def clear_app_data(self):
         """清理数据后启动app
         """
@@ -200,6 +224,20 @@ class Register(InitDevice):
         with open('/Users/yunfeiwang/project/platfrom/data/phone.txt', 'a+') as f:
             f.write(f'{phone}\n')
 
+    # def main(self, source: str, q):
+    #     """对用户列表中的用户进行注册
+
+    #     Args:
+    #         data (list): 用户列表
+    #     """
+    #     self.logger.info('111111111111')
+    #     dbfile = '/Users/yunfeiwang/project/platfrom/data/platfrom.txt'
+    #     myDB = ExeDataBase(dbfile)
+    #     startTime = time.time()
+    # #     appStatus = True
+    # while not q.empty():
+    #         name = q.get()
+    #         if len(name) == 0:
     def main(self, data: list, registedList: list, source: str):
         """对用户列表中的用户进行注册
 
@@ -227,7 +265,8 @@ class Register(InitDevice):
                 if status == '1':
                     self.updata_regist_phone(phone)
                     timStr = time.strftime('%Y_%m_%d %H:%M:%S')
-                    data = [(phone, name, '0', source, self.deviceID, timStr, '学习强国')]
+                    data = [(phone, name, '1', '0', source, self.phoneType ,
+                             self.deviceID, timStr, '学习强国')]
                     myDB.inster_db('xuexi', data)
                     self.logger.info(
                         f"{name} register success, phone: {phone}")
@@ -241,8 +280,15 @@ class Register(InitDevice):
                     appStatus = True
                     if exists(Template(f"{self.imageDir}/tpl1690208846273.png", record_pos=(-0.389, -0.757), resolution=(1080, 1920))):
                         self.logger.warning(f'{phone} has been registered')
-                        self.updata_regist_phone(phone)
-                        self.clear_app_data()
+                        if self.change_name(name):
+                            self.updata_regist_phone(phone)
+                            timStr = time.strftime('%Y_%m_%d %H:%M:%S')
+                            data = [(phone, name, '0', '0', source, self.phoneType, self.deviceID, timStr, '学习强国')]
+                            myDB.inster_db('xuexi', data)
+                            self.clear_app_data()
+                            break
+                        else:
+                            self.clear_app_data()
                     else:
                         stop_app(self.appName)
                         start_app(self.appName)
